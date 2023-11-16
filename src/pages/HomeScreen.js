@@ -47,7 +47,7 @@ export default function HomeScreen({ navigation }) {
           onChangeText={(text) => setLocation(text)}
         />
       </View>
-
+      {/* Date Check-In & Check-Out */}
       <View style={styles.inputContainer}>
         <Feather name="calendar" size={24} color="black" />
         <Pressable
@@ -86,6 +86,7 @@ export default function HomeScreen({ navigation }) {
         <Text style={styles.searchText}>Search</Text>
       </Pressable>
 
+      {/* Top Destination */}
       <Text style={styles.heading}>Top Destination</Text>
       <ScrollView horizontal showsHorizontalScrollIndicator={false}>
         {topDestination.map((top) => (
@@ -98,6 +99,7 @@ export default function HomeScreen({ navigation }) {
         ))}
       </ScrollView>
 
+      {/* Popular Destination */}
       <Text style={styles.heading}>Popular Destination</Text>
       {popularDestination.map((popular) => (
         <View key={popular.id} style={styles.cardContainer}>
@@ -114,7 +116,6 @@ export default function HomeScreen({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     padding: 20,
-    paddingTop: 50,
   },
   inputContainer: {
     flexDirection: "row",
