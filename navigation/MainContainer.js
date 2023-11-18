@@ -7,19 +7,21 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import HomeScreen from '../src/pages/HomeScreen';
 import FavoriteScreen from '../src/pages/FavoriteScreen';
 import ProfileScreen from '../src/pages/ProfileScreen';
-import SettingScreen from '../src/pages/SettingScreen';
+import SettingScreen from '../src/pages/setting/SettingScreen';
+import { SettingRoutes } from './stacks/SettingStack';
 
 // Screen names
 const homeName = 'Home';
 const favoriteName = 'Favorite';
 const profileName = 'Profile';
-const settingName = 'Setting';
+const settingName = 'Setting page';
 
 const tabScreenOptions = {
   tabBarActiveTintColor: 'tomato',
   tabBarInactiveTintColor: 'gray',
   tabBarLabelStyle: { paddingBottom: 10, fontSize: 10 },
   tabBarStyle: { padding: 10, height: 70 },
+
 };
 
 const navigationOptions = {
@@ -57,6 +59,7 @@ const MainContainer = () => {
             return <Ionicons name={iconName} size={size} color={color} />;
           },
         })}
+        
       >
         <Tab.Screen
           name={homeName}
@@ -75,8 +78,8 @@ const MainContainer = () => {
         />
         <Tab.Screen
           name={settingName}
-          component={SettingScreen}
-          options={{ ...navigationOptions }}
+          component={SettingRoutes}
+          options={{ headerShown: false}}
         />
       </Tab.Navigator>
     </NavigationContainer>

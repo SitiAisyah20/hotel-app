@@ -1,11 +1,12 @@
 import React from 'react'
 import { View, Text, StyleSheet, Image } from 'react-native'
 import { AirbnbRating, rating } from "react-native-elements";
+import Container from '../components/layout/Container';
 
 
 export default function ProfileScreen({ navigation }) {
   return (
-    <View style={styles.container}>
+    <Container>
       {/*  */}
       <View style={[styles.header, styles.shadow]}>
         {/* detail profile */}
@@ -71,17 +72,11 @@ export default function ProfileScreen({ navigation }) {
           </View>
         </View>
       </View>
-    </View>
+    </Container>
   )
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    paddingVertical: 16,
-    paddingHorizontal: 20
-  },
   header: {
     borderRadius: 20,
     backgroundColor: '#EEF5FF',

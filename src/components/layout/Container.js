@@ -1,10 +1,10 @@
 import { View, Text, StyleSheet } from 'react-native'
 import React from 'react'
 
-export default function SettingScreen() {
+const Container = ({ children }) => {
   return (
     <View style={styles.container}>
-      <Text style={styles.text}>SettingScreen</Text>
+      {children}
     </View>
   )
 }
@@ -13,8 +13,9 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
+    paddingVertical: 16,
+    paddingHorizontal: 20
   },
-  text: { fontSize: 30, fontWeight: 'bold' }
 });
+
+export default Container
