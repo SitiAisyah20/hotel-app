@@ -10,7 +10,12 @@ import {
 } from "react-native";
 import { Feather } from "@expo/vector-icons";
 import DateTimePicker from "@react-native-community/datetimepicker";
-import { topDestination, popularDestination } from "../utils/city";
+import { useDispatch, useSelector } from "react-redux";
+import { searchHotels } from "../redux/actions/hotelAction";
+import { AirbnbRating } from "react-native-elements";
+import { FontAwesome } from "@expo/vector-icons";
+import TopDestination from "../components/home/TopDestination";
+import PopularDestination from "../components/home/PopularDestination";
 
 export default function HomeScreen({ navigation }) {
   const [checkInDate, setCheckInDate] = useState(new Date());
@@ -18,6 +23,8 @@ export default function HomeScreen({ navigation }) {
   const [location, setLocation] = useState("");
   const [showCheckInDatePicker, setShowCheckInDatePicker] = useState(false);
   const [showCheckOutDatePicker, setShowCheckOutDatePicker] = useState(false);
+  const dispatch = useDispatch();
+  const searchResults = useSelector((state) => state.hotels.searchResults);
 
   const handleCheckInDateChange = (event, selectedDate) => {
     setShowCheckInDatePicker(false);
@@ -33,7 +40,9 @@ export default function HomeScreen({ navigation }) {
     }
   };
 
-  const handleSearch = () => {};
+  const handleSearch = () => {
+    dispatch(searchHotels(location, checkInDate, checkOutDate));
+  };
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
@@ -54,7 +63,7 @@ export default function HomeScreen({ navigation }) {
           style={styles.dateInput}
           onPress={() => setShowCheckInDatePicker(true)}
         >
-          <Text>{(checkInDate ?? new Date()).toLocaleDateString()}</Text>
+          <Text>{checkInDate.toLocaleDateString()}</Text>
         </Pressable>
         <Feather name="calendar" size={24} color="black" />
         <Pressable
@@ -86,29 +95,58 @@ export default function HomeScreen({ navigation }) {
         <Text style={styles.searchText}>Search</Text>
       </Pressable>
 
-      {/* Top Destination */}
-      <Text style={styles.heading}>Top Destination</Text>
-      <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-        {topDestination.map((top) => (
-          <View key={top.id} style={styles.cardContainer}>
-            <Image source={top.image} style={styles.imageTop} />
-            <View style={styles.imageOverlay}>
-              <Text style={styles.titleTop}>{top.name}</Text>
+      {/* Search Results */}
+      {searchResults &&
+        searchResults.hotels &&
+        searchResults.hotels.length > 0 &&
+        searchResults.hotels.map((result) => (
+          <Pressable key={result.hotelId} style={styles.cardContainer}>
+            <View style={styles.iconContainer}>
+              <FontAwesome name="heart-o" size={24} color="red" />
             </View>
-          </View>
+            <Image
+              source={
+                result.media && result.media.url
+                  ? { uri: result.media.url }
+                  : null
+              }
+              style={styles.hotelImage}
+            />
+
+            <View style={styles.cardContent}>
+              <View style={styles.leftContent}>
+                <Text style={styles.hotelName}>{result.name}</Text>
+                <View style={{ marginLeft: 0, flexDirection: "row", gap: 4 }}>
+                  <AirbnbRating
+                    count={5}
+                    defaultRating={result.starRating}
+                    size={14}
+                    showRating={false}
+                    isDisabled
+                  />
+                  <Text>{result.starRating}</Text>
+                </View>
+                <View style={styles.locationContainer}>
+                  <FontAwesome name="map-marker" size={16} color="black" />
+                  {result.location && result.location.address && (
+                    <Text style={styles.location}>
+                      {" "}
+                      {result.location.address.cityName}
+                    </Text>
+                  )}
+                </View>
+              </View>
+              <Text style={styles.price}>${result.ratesSummary.minPrice}</Text>
+              <Text> /per night</Text>
+            </View>
+          </Pressable>
         ))}
-      </ScrollView>
+
+      {/* Top Destination */}
+      <TopDestination />
 
       {/* Popular Destination */}
-      <Text style={styles.heading}>Popular Destination</Text>
-      {popularDestination.map((popular) => (
-        <View key={popular.id} style={styles.cardContainer}>
-          <Image source={popular.image} style={styles.imagePop} />
-          <View style={styles.overlayPop}>
-            <Text style={styles.titlePop}>{popular.name}</Text>
-          </View>
-        </View>
-      ))}
+      <PopularDestination />
     </ScrollView>
   );
 }
@@ -158,46 +196,60 @@ const styles = StyleSheet.create({
     marginBottom: 15,
   },
   cardContainer: {
-    marginHorizontal: 10,
-    marginBottom: 20,
+    marginTop: 30,
     borderRadius: 10,
     overflow: "hidden",
+    backgroundColor: "#EEF5FF",
+    elevation: 5,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    position: "relative",
   },
-  imageTop: {
-    width: 200,
-    height: 150,
-    resizeMode: "cover",
-  },
-  titleTop: {
-    fontSize: 16,
-    fontWeight: "bold",
-    marginVertical: 7,
-    color: "white",
-  },
-  imageOverlay: {
+  iconContainer: {
     position: "absolute",
-    bottom: 0,
-    left: 0,
-    right: 0,
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
-    padding: 10,
+    top: 10,
+    right: 10,
+    zIndex: 1,
   },
-  imagePop: {
+  hotelImage: {
     width: "auto",
-    height: 250,
+    height: 200,
     resizeMode: "cover",
   },
-  titlePop: {
-    fontSize: 16,
-    fontWeight: "bold",
-    marginVertical: 7,
-  },
-  overlayPop: {
-    position: "absolute",
-    bottom: 0,
-    left: 0,
-    right: 0,
-    backgroundColor: "white",
+  cardContent: {
     padding: 10,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  leftContent: {
+    flex: 1,
+  },
+  hotelName: {
+    fontSize: 18,
+    fontWeight: "bold",
+  },
+  rating: {
+    fontSize: 16,
+    marginBottom: 5,
+  },
+  locationContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 5,
+  },
+  location: {
+    fontSize: 16,
+    marginLeft: 5,
+  },
+  price: {
+    fontSize: 18,
+    fontWeight: "bold",
+    color: "tomato",
   },
 });
