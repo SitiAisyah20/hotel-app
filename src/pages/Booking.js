@@ -7,6 +7,7 @@ import {
   StyleSheet,
 } from "react-native";
 import { Picker } from "@react-native-picker/picker";
+import useHideTabBar from "../hooks/useHideTabBar";
 
 const Booking = ({ navigation, route }) => {
   const { hotelId, price } = route.params;
@@ -17,6 +18,7 @@ const Booking = ({ navigation, route }) => {
   const [phoneNumber, setPhoneNumber] = useState("");
   const [countryCode, setCountryCode] = useState("+62");
   const [numberOfNights, setNumberOfNights] = useState(0);
+  useHideTabBar(navigation);
 
   useEffect(() => {
     if (checkInDate && checkOutDate) {

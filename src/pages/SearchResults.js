@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -7,12 +7,14 @@ import {
   Pressable,
   ScrollView,
   Image,
+  ActivityIndicator
 } from "react-native";
 import { Feather } from "@expo/vector-icons";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchHotelDetails, searchHotels } from "../redux/actions/hotelAction";
 import { AirbnbRating } from "react-native-elements";
 import { FontAwesome } from "@expo/vector-icons";
+import useHideTabBar from "../hooks/useHideTabBar";
 
 export default function SearchResult({ navigation, route }) {
   const { location } = route.params;
@@ -20,6 +22,8 @@ export default function SearchResult({ navigation, route }) {
   const checkOutDate = new Date(route.params.checkOutDate);
   const dispatch = useDispatch();
   const searchResults = useSelector((state) => state.hotels.searchResults);
+  useHideTabBar(navigation);
+  const [loading, setLoading] = useState(true);
 
   const handleCardPress = (hotel) => {
     dispatch(fetchHotelDetails(hotel.hotelId));
@@ -32,8 +36,10 @@ export default function SearchResult({ navigation, route }) {
   };
 
   useEffect(() => {
-    dispatch(searchHotels(location, checkInDate, checkOutDate));
-  }, [dispatch, location, checkInDate, checkOutDate]);
+    dispatch(searchHotels(location, checkInDate, checkOutDate))
+      .then(() => setLoading(false))
+      .catch(() => setLoading(false));
+  }, []);
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
@@ -60,57 +66,64 @@ export default function SearchResult({ navigation, route }) {
         </View>
 
         {/* Search Results */}
-        {searchResults &&
-          searchResults.hotels &&
-          searchResults.hotels.length > 0 &&
-          searchResults.hotels.map((result) => (
-            <Pressable
-              key={result.hotelId}
-              style={styles.cardContainer}
-              onPress={() => handleCardPress(result)}
-            >
-              <View style={styles.iconContainer}>
-                <FontAwesome name="heart-o" size={24} color="red" />
-              </View>
-              <Image
-                source={
-                  result.media && result.media.url
-                    ? { uri: result.media.url }
-                    : null
-                }
-                style={styles.hotelImage}
-              />
+        {
+          loading ? (
+            <View style={styles.loadingContainer}>
+              <ActivityIndicator size="large" color="tomato" />
+            </View>
+          ) :
+            searchResults &&
+            searchResults.hotels &&
+            searchResults.hotels.length > 0 &&
+            searchResults.hotels.map((result) =>
+              result.hotelId ? (
+                <Pressable
+                  key={result.hotelId}
+                  style={styles.cardContainer}
+                  onPress={() => handleCardPress(result)}
+                >
+                  <View style={styles.iconContainer}>
+                    <FontAwesome name="heart-o" size={24} color="red" />
+                  </View>
+                  <Image
+                    source={
+                      result.media && result.media.url
+                        ? { uri: result.media.url }
+                        : null
+                    }
+                    style={styles.hotelImage}
+                  />
 
-              <View style={styles.cardContent}>
-                <View style={styles.leftContent}>
-                  <Text style={styles.hotelName}>{result.name}</Text>
-                  <View style={{ marginLeft: 0, flexDirection: "row", gap: 4 }}>
-                    <AirbnbRating
-                      count={5}
-                      defaultRating={result.starRating}
-                      size={14}
-                      showRating={false}
-                      isDisabled
-                    />
-                    <Text>{result.starRating}</Text>
+                  <View style={styles.cardContent}>
+                    <View style={styles.leftContent}>
+                      <Text style={styles.hotelName}>{result.name}</Text>
+                      <View style={{ marginLeft: 0, flexDirection: "row", gap: 4 }}>
+                        <AirbnbRating
+                          count={5}
+                          defaultRating={result.starRating}
+                          size={14}
+                          showRating={false}
+                          isDisabled
+                        />
+                        <Text>{result.starRating}</Text>
+                      </View>
+                      <View style={styles.locationContainer}>
+                        <FontAwesome name="map-marker" size={16} color="black" />
+                        {result.location && result.location.address && (
+                          <Text style={styles.location}>
+                            {" "}
+                            {result.location.address.cityName}
+                          </Text>
+                        )}
+                      </View>
+                    </View>
+                    <Text style={styles.price}>
+                      ${result.ratesSummary.minPrice}
+                    </Text>
+                    <Text> /per night</Text>
                   </View>
-                  <View style={styles.locationContainer}>
-                    <FontAwesome name="map-marker" size={16} color="black" />
-                    {result.location && result.location.address && (
-                      <Text style={styles.location}>
-                        {" "}
-                        {result.location.address.cityName}
-                      </Text>
-                    )}
-                  </View>
-                </View>
-                <Text style={styles.price}>
-                  ${result.ratesSummary.minPrice}
-                </Text>
-                <Text> /per night</Text>
-              </View>
-            </Pressable>
-          ))}
+                </Pressable>
+              ) : null)}
       </View>
     </ScrollView>
   );
@@ -198,5 +211,10 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: "bold",
     color: "tomato",
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
   },
 });
