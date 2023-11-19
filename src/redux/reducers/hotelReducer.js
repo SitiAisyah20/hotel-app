@@ -1,5 +1,6 @@
 const initialState = {
   searchResults: [],
+  hotelDetails: null,
 };
 
 const rootReducer = (state = initialState, action) => {
@@ -8,6 +9,11 @@ const rootReducer = (state = initialState, action) => {
       return {
         ...state,
         searchResults: action.payload,
+      };
+    case "SET_HOTEL_DETAILS":
+      return {
+        ...state,
+        hotelDetails: action.payload,
       };
     default:
       return state;
