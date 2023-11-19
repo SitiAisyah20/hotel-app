@@ -8,6 +8,11 @@ export const setSearchResults = (results) => ({
   payload: results,
 });
 
+export const setHotelDetails = (details) => ({
+  type: "SET_HOTEL_DETAILS",
+  payload: details,
+});
+
 export const searchHotels = (location, checkInDate, checkOutDate) => {
   return async (dispatch) => {
     try {
@@ -46,10 +51,30 @@ export const searchHotels = (location, checkInDate, checkOutDate) => {
         },
       });
 
-    //   console.log("API Response:", response.data);
+      //   console.log("API Response:", response.data);
       dispatch(setSearchResults(response.data));
     } catch (error) {
       console.error("Error searching hotels:", error);
+    }
+  };
+};
+
+export const fetchHotelDetails = (hotelId) => {
+  return async (dispatch) => {
+    try {
+      const response = await axios.get(`${BASE_URL}/v1/hotels/details`, {
+        params: {
+          hotel_id: hotelId,
+        },
+        headers: {
+          "X-RapidAPI-Key": API_KEY,
+          "X-RapidAPI-Host": "priceline-com-provider.p.rapidapi.com",
+        },
+      });
+
+      dispatch(setHotelDetails(response.data));
+    } catch (error) {
+      console.error("Error fetching hotel details:", error);
     }
   };
 };

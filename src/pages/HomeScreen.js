@@ -6,14 +6,11 @@ import {
   TextInput,
   Pressable,
   ScrollView,
-  Image,
 } from "react-native";
 import { Feather } from "@expo/vector-icons";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { useDispatch, useSelector } from "react-redux";
 import { searchHotels } from "../redux/actions/hotelAction";
-import { AirbnbRating } from "react-native-elements";
-import { FontAwesome } from "@expo/vector-icons";
 import TopDestination from "../components/home/TopDestination";
 import PopularDestination from "../components/home/PopularDestination";
 
@@ -42,6 +39,12 @@ export default function HomeScreen({ navigation }) {
 
   const handleSearch = () => {
     dispatch(searchHotels(location, checkInDate, checkOutDate));
+    navigation.navigate("Search Results", {
+      location,
+      checkInDate,
+      checkOutDate,
+      searchResults,
+    });
   };
 
   return (
@@ -95,53 +98,6 @@ export default function HomeScreen({ navigation }) {
         <Text style={styles.searchText}>Search</Text>
       </Pressable>
 
-      {/* Search Results */}
-      {searchResults &&
-        searchResults.hotels &&
-        searchResults.hotels.length > 0 &&
-        searchResults.hotels.map((result) => (
-          <Pressable key={result.hotelId} style={styles.cardContainer}>
-            <View style={styles.iconContainer}>
-              <FontAwesome name="heart-o" size={24} color="red" />
-            </View>
-            <Image
-              source={
-                result.media && result.media.url
-                  ? { uri: result.media.url }
-                  : null
-              }
-              style={styles.hotelImage}
-            />
-
-            <View style={styles.cardContent}>
-              <View style={styles.leftContent}>
-                <Text style={styles.hotelName}>{result.name}</Text>
-                <View style={{ marginLeft: 0, flexDirection: "row", gap: 4 }}>
-                  <AirbnbRating
-                    count={5}
-                    defaultRating={result.starRating}
-                    size={14}
-                    showRating={false}
-                    isDisabled
-                  />
-                  <Text>{result.starRating}</Text>
-                </View>
-                <View style={styles.locationContainer}>
-                  <FontAwesome name="map-marker" size={16} color="black" />
-                  {result.location && result.location.address && (
-                    <Text style={styles.location}>
-                      {" "}
-                      {result.location.address.cityName}
-                    </Text>
-                  )}
-                </View>
-              </View>
-              <Text style={styles.price}>${result.ratesSummary.minPrice}</Text>
-              <Text> /per night</Text>
-            </View>
-          </Pressable>
-        ))}
-
       {/* Top Destination */}
       <TopDestination />
 
@@ -188,68 +144,5 @@ const styles = StyleSheet.create({
     color: "white",
     fontSize: 18,
     fontWeight: "bold",
-  },
-  heading: {
-    fontSize: 20,
-    fontWeight: "bold",
-    marginTop: 20,
-    marginBottom: 15,
-  },
-  cardContainer: {
-    marginTop: 30,
-    borderRadius: 10,
-    overflow: "hidden",
-    backgroundColor: "#EEF5FF",
-    elevation: 5,
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    position: "relative",
-  },
-  iconContainer: {
-    position: "absolute",
-    top: 10,
-    right: 10,
-    zIndex: 1,
-  },
-  hotelImage: {
-    width: "auto",
-    height: 200,
-    resizeMode: "cover",
-  },
-  cardContent: {
-    padding: 10,
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-  },
-  leftContent: {
-    flex: 1,
-  },
-  hotelName: {
-    fontSize: 18,
-    fontWeight: "bold",
-  },
-  rating: {
-    fontSize: 16,
-    marginBottom: 5,
-  },
-  locationContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginBottom: 5,
-  },
-  location: {
-    fontSize: 16,
-    marginLeft: 5,
-  },
-  price: {
-    fontSize: 18,
-    fontWeight: "bold",
-    color: "tomato",
   },
 });
