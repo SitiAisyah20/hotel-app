@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import {
   View,
   Text,
@@ -9,24 +9,31 @@ import {
   Image,
 } from "react-native";
 import { Feather } from "@expo/vector-icons";
-import { useDispatch } from "react-redux";
-import { fetchHotelDetails } from "../redux/actions/hotelAction";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchHotelDetails, searchHotels } from "../redux/actions/hotelAction";
 import { AirbnbRating } from "react-native-elements";
 import { FontAwesome } from "@expo/vector-icons";
 
 export default function SearchResult({ navigation, route }) {
-  const { location, checkInDate, checkOutDate, searchResults } = route.params;
+  const { location } = route.params;
+  const checkInDate = new Date(route.params.checkInDate);
+  const checkOutDate = new Date(route.params.checkOutDate);
   const dispatch = useDispatch();
+  const searchResults = useSelector((state) => state.hotels.searchResults);
 
   const handleCardPress = (hotel) => {
     dispatch(fetchHotelDetails(hotel.hotelId));
     navigation.navigate("Hotel Details", {
       hotel,
       price: hotel.ratesSummary.minPrice,
-      checkInDate,
-      checkOutDate,
+      checkInDate: checkInDate.toISOString(),
+      checkOutDate: checkOutDate.toISOString(),
     });
   };
+
+  useEffect(() => {
+    dispatch(searchHotels(location, checkInDate, checkOutDate));
+  }, [dispatch, location, checkInDate, checkOutDate]);
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
