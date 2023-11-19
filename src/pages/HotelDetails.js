@@ -15,7 +15,9 @@ import Review from "../components/details/Review";
 
 const HotelDetails = ({ navigation }) => {
   const route = useRoute();
-  const { hotel, price, checkInDate, checkOutDate } = route.params;
+  const { hotel, price } = route.params;
+  const checkInDate = new Date(route.params.checkInDate);
+  const checkOutDate = new Date(route.params.checkOutDate);
   const dispatch = useDispatch();
   const hotelDetails = useSelector((state) => state.hotels.hotelDetails);
 
@@ -29,8 +31,8 @@ const HotelDetails = ({ navigation }) => {
     navigation.navigate("Booking", {
       hotelId: hotel.hotelId,
       price,
-      checkInDate,
-      checkOutDate,
+      checkInDate: checkInDate.toISOString(),
+      checkOutDate: checkOutDate.toISOString(),
     });
   };
 
@@ -50,13 +52,13 @@ const HotelDetails = ({ navigation }) => {
 
       <View style={styles.aboutContainer}>
         <Text style={styles.textTitle}>About</Text>
-        <Text>{hotelDetails.description}</Text>
+        <Text>{hotelDetails?.description}</Text>
       </View>
 
       <View style={styles.facilitiesContainer}>
         <Text style={styles.textTitle}>Facilities</Text>
         <ScrollView horizontal>
-          {hotelDetails.hotelFeatures.hotelAmenities?.map((facility, idx) => (
+          {hotelDetails?.hotelFeatures?.hotelAmenities?.map((facility, idx) => (
             <Facility key={idx} type={facility.type} />
           ))}
         </ScrollView>
@@ -64,7 +66,7 @@ const HotelDetails = ({ navigation }) => {
 
       <View style={styles.reviewsContainer}>
         <Text style={styles.textTitle}>Reviews</Text>
-        {hotelDetails.guestReviews && hotelDetails.guestReviews.length > 0 ? (
+        {hotelDetails?.guestReviews && hotelDetails.guestReviews.length > 0 ? (
           hotelDetails.guestReviews.map((review, idx) => (
             <Review
               key={idx}

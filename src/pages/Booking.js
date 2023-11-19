@@ -9,26 +9,26 @@ import {
 import { Picker } from "@react-native-picker/picker";
 
 const Booking = ({ navigation, route }) => {
-  const { hotelId, price, checkInDate, checkOutDate } = route.params;
+  const { hotelId, price } = route.params;
+  const checkInDate = new Date(route.params.checkInDate);
+  const checkOutDate = new Date(route.params.checkOutDate);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
   const [countryCode, setCountryCode] = useState("+62");
-  const [numberOfDays, setNumberOfDays] = useState(0);
+  const [numberOfNights, setNumberOfNights] = useState(0);
 
   useEffect(() => {
     if (checkInDate && checkOutDate) {
-      const startDate = new Date(checkInDate);
-      const endDate = new Date(checkOutDate);
-      const daysDifference = Math.floor(
-        (endDate - startDate) / (24 * 60 * 60 * 1000)
+      const nightsDifference = Math.floor(
+        (checkOutDate - checkInDate) / (24 * 60 * 60 * 1000)
       );
-      setNumberOfDays(daysDifference + 1);
+      setNumberOfNights(nightsDifference);
     }
   }, [checkInDate, checkOutDate]);
 
   const totalPayment = () => {
-    return price * numberOfDays;
+    return price * numberOfNights;
   };
 
   const handlePressCheckout = () => {
@@ -80,7 +80,7 @@ const Booking = ({ navigation, route }) => {
       <Text style={styles.textTitle}>BOOKING SUMMARY</Text>
       <View style={styles.summaryContainer}>
         <Text style={styles.textSubtitle}>
-          Number of days: {numberOfDays} days
+          Number of nights: {numberOfNights} nights
         </Text>
         <View style={styles.underline} />
         <View style={styles.priceInformationContainer}>

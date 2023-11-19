@@ -41,8 +41,8 @@ export default function HomeScreen({ navigation }) {
     dispatch(searchHotels(location, checkInDate, checkOutDate));
     navigation.navigate("Search Results", {
       location,
-      checkInDate,
-      checkOutDate,
+      checkInDate: checkInDate.toISOString(),
+      checkOutDate: checkOutDate.toISOString(),
       searchResults,
     });
   };
