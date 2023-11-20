@@ -29,6 +29,7 @@ const HotelDetails = ({ navigation }) => {
 
   const handlePressBooking = () => {
     navigation.navigate("Booking", {
+      hotel,
       hotelId: hotel.hotelId,
       price,
       checkInDate: checkInDate.toISOString(),

@@ -8,9 +8,11 @@ import {
 } from "react-native";
 import { Picker } from "@react-native-picker/picker";
 import useHideTabBar from "../hooks/useHideTabBar";
+import { useDispatch } from "react-redux";
+import { setBookingHotel } from "../redux/actions/hotelAction";
 
 const Booking = ({ navigation, route }) => {
-  const { hotelId, price } = route.params;
+  const { hotel, hotelId, price } = route.params;
   const checkInDate = new Date(route.params.checkInDate);
   const checkOutDate = new Date(route.params.checkOutDate);
   const [name, setName] = useState("");
@@ -19,6 +21,7 @@ const Booking = ({ navigation, route }) => {
   const [countryCode, setCountryCode] = useState("+62");
   const [numberOfNights, setNumberOfNights] = useState(0);
   useHideTabBar(navigation);
+  const dispatch = useDispatch();
 
   useEffect(() => {
     if (checkInDate && checkOutDate) {
@@ -34,7 +37,16 @@ const Booking = ({ navigation, route }) => {
   };
 
   const handlePressCheckout = () => {
-    navigation.goBack();
+    if (!name || !email || !phoneNumber) {
+      alert("Please fill in all required fields (Name, Email, Phone Number).");
+      return;
+    }
+    const bookingHotel = {
+      hotel,
+      price,
+    };
+    dispatch(setBookingHotel(bookingHotel));
+    navigation.navigate("Profile");
   };
 
   return (
