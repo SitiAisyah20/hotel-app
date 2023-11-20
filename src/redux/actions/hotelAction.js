@@ -13,6 +13,11 @@ export const setHotelDetails = (details) => ({
   payload: details,
 });
 
+export const setBookingHotel = (bookingHotel) => ({
+  type: "SET_BOOKING_HOTEL",
+  payload: bookingHotel,
+});
+
 export const searchHotels = (location, checkInDate, checkOutDate) => {
   return async (dispatch) => {
     try {
