@@ -2,6 +2,7 @@ const initialState = {
   searchResults: [],
   hotelDetails: null,
   bookingHotels: [],
+  favoriteHotels: [],
 };
 
 const rootReducer = (state = initialState, action) => {
@@ -25,7 +26,20 @@ const rootReducer = (state = initialState, action) => {
       return {
         ...state,
         bookingHotels: [],
-      }
+      };
+    case "ADD_TO_FAVORITES":
+      return {
+        ...state,
+        favoriteHotels: [...state.favoriteHotels, action.payload],
+      };
+    case "REMOVE_FROM_FAVORITES":
+      const updatedFavorites = state.favoriteHotels.filter(
+        (hotel) => hotel.hotelId !== action.payload
+      );
+      return {
+        ...state,
+        favoriteHotels: updatedFavorites,
+      };
     default:
       return state;
   }

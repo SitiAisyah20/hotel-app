@@ -7,11 +7,16 @@ import {
   Pressable,
   ScrollView,
   Image,
-  ActivityIndicator
+  ActivityIndicator,
 } from "react-native";
 import { Feather } from "@expo/vector-icons";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchHotelDetails, searchHotels } from "../redux/actions/hotelAction";
+import {
+  addToFavorites,
+  fetchHotelDetails,
+  removeFromFavorites,
+  searchHotels,
+} from "../redux/actions/hotelAction";
 import { AirbnbRating } from "react-native-elements";
 import { FontAwesome } from "@expo/vector-icons";
 import useHideTabBar from "../hooks/useHideTabBar";
@@ -24,6 +29,7 @@ export default function SearchResult({ navigation, route }) {
   const searchResults = useSelector((state) => state.hotels.searchResults);
   useHideTabBar(navigation);
   const [loading, setLoading] = useState(true);
+  const favoriteHotels = useSelector((state) => state.hotels.favoriteHotels);
 
   const handleCardPress = (hotel) => {
     dispatch(fetchHotelDetails(hotel.hotelId));
@@ -40,6 +46,17 @@ export default function SearchResult({ navigation, route }) {
       .then(() => setLoading(false))
       .catch(() => setLoading(false));
   }, []);
+
+  const handleFavorite = (hotel) => {
+    if (favoriteHotels.some((favHotel) => favHotel.hotelId === hotel.hotelId)) {
+      // Remove from favorites
+      dispatch(removeFromFavorites(hotel.hotelId));
+    } else {
+      // Add to favorites
+      dispatch(addToFavorites(hotel));
+    }
+  };
+
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
@@ -66,64 +83,78 @@ export default function SearchResult({ navigation, route }) {
         </View>
 
         {/* Search Results */}
-        {
-          loading ? (
-            <View style={styles.loadingContainer}>
-              <ActivityIndicator size="large" color="tomato" />
-            </View>
-          ) :
-            searchResults &&
-            searchResults.hotels &&
-            searchResults.hotels.length > 0 &&
-            searchResults.hotels.map((result) =>
-              result.hotelId ? (
-                <Pressable
-                  key={result.hotelId}
-                  style={styles.cardContainer}
-                  onPress={() => handleCardPress(result)}
-                >
-                  <View style={styles.iconContainer}>
-                    <FontAwesome name="heart-o" size={24} color="red" />
-                  </View>
-                  <Image
-                    source={
-                      result.media && result.media.url
-                        ? { uri: result.media.url }
-                        : null
+        {loading ? (
+          <View style={styles.loadingContainer}>
+            <ActivityIndicator size="large" color="tomato" />
+          </View>
+        ) : (
+          searchResults &&
+          searchResults.hotels &&
+          searchResults.hotels.length > 0 &&
+          searchResults.hotels.map((result) =>
+            result.hotelId ? (
+              <Pressable
+                key={result.hotelId}
+                style={styles.cardContainer}
+                onPress={() => handleCardPress(result)}
+              >
+                <View style={styles.iconContainer}>
+                  <FontAwesome
+                    name={
+                      favoriteHotels.some(
+                        (hotel) => hotel.id === result.hotelId
+                      )
+                        ? "heart"
+                        : "heart-o"
                     }
-                    style={styles.hotelImage}
+                    size={24}
+                    color="red"
+                    onPress={() => handleFavorite(result)}
                   />
+                </View>
+                <Image
+                  source={
+                    result.media && result.media.url
+                      ? { uri: result.media.url }
+                      : null
+                  }
+                  style={styles.hotelImage}
+                />
 
-                  <View style={styles.cardContent}>
-                    <View style={styles.leftContent}>
-                      <Text style={styles.hotelName}>{result.name}</Text>
-                      <View style={{ marginLeft: 0, flexDirection: "row", gap: 4 }}>
-                        <AirbnbRating
-                          count={5}
-                          defaultRating={result.starRating}
-                          size={14}
-                          showRating={false}
-                          isDisabled
-                        />
-                        <Text>{result.starRating}</Text>
-                      </View>
-                      <View style={styles.locationContainer}>
-                        <FontAwesome name="map-marker" size={16} color="black" />
-                        {result.location && result.location.address && (
-                          <Text style={styles.location}>
-                            {" "}
-                            {result.location.address.cityName}
-                          </Text>
-                        )}
-                      </View>
+                <View style={styles.cardContent}>
+                  <View style={styles.leftContent}>
+                    <Text style={styles.hotelName}>{result.name}</Text>
+                    <View
+                      style={{ marginLeft: 0, flexDirection: "row", gap: 4 }}
+                    >
+                      <AirbnbRating
+                        count={5}
+                        defaultRating={result.starRating}
+                        size={14}
+                        showRating={false}
+                        isDisabled
+                      />
+                      <Text>{result.starRating}</Text>
                     </View>
-                    <Text style={styles.price}>
-                      ${result.ratesSummary.minPrice}
-                    </Text>
-                    <Text> /per night</Text>
+                    <View style={styles.locationContainer}>
+                      <FontAwesome name="map-marker" size={16} color="black" />
+                      {result.location && result.location.address && (
+                        <Text style={styles.location}>
+                          {" "}
+                          {result.location.address.cityName}
+                        </Text>
+                      )}
+                    </View>
                   </View>
-                </Pressable>
-              ) : null)}
+                  <Text style={styles.price}>
+                    ${result.ratesSummary.minPrice}
+                  </Text>
+                  <Text> /per night</Text>
+                </View>
+              </Pressable>
+            ) : null
+          )
+        )}
       </View>
     </ScrollView>
   );
