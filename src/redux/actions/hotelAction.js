@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_KEY = "77a965ceb1msh6a281dfc1102db9p1fd573jsn978c43e45401";
+const API_KEY = "59ba2633c1msh56457453f52bb31p18d533jsnb92ce2f3f28b";
 const BASE_URL = "https://priceline-com-provider.p.rapidapi.com";
 
 export const setSearchResults = (results) => ({
@@ -15,6 +15,10 @@ export const setHotelDetails = (details) => ({
 
 export const setBookingHotel = (bookingHotel) => ({
   type: "SET_BOOKING_HOTEL",
+  payload: bookingHotel,
+});
+export const clearBookingHotel = (bookingHotel) => ({
+  type: "CLEAR_BOOKING_HOTEL",
   payload: bookingHotel,
 });
 
