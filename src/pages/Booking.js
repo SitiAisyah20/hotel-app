@@ -54,7 +54,7 @@ const Booking = ({ navigation, route }) => {
         index: 0,
         routes: [
           {
-            name: 'Home',
+            name: 'Home page',
           }
         ],
       })
