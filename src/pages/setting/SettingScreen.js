@@ -4,7 +4,7 @@ import Container from '../../components/layout/Container'
 import Button from '../../components/button/Button'
 import { useDispatch, useSelector } from 'react-redux';
 import { clearUser, setIsAuthenticated } from '../../redux/reducers/userReducer';
-import { clearBookingHotel } from '../../redux/actions/hotelAction';
+import { clearAllFavorites, clearBookingHotel } from '../../redux/actions/hotelAction';
 import { CommonActions } from '@react-navigation/native';
 
 export default function SettingScreen({ navigation }) {
@@ -21,6 +21,7 @@ export default function SettingScreen({ navigation }) {
       dispatch(setIsAuthenticated(false));
       dispatch(clearUser());
       dispatch(clearBookingHotel());
+      dispatch(clearAllFavorites());
 
       navigation.dispatch(
         CommonActions.reset({

@@ -6,6 +6,7 @@ import { useSelector } from "react-redux";
 
 export default function ProfileScreen({ navigation }) {
   const bookingHotels = useSelector((state) => state.hotels.bookingHotels);
+  const favoriteHotels = useSelector((state) => state.hotels.favoriteHotels);
   const { user } = useSelector((state) => state.user);
 
   return (
@@ -61,7 +62,7 @@ export default function ProfileScreen({ navigation }) {
             </View>
             <View style={{ alignItems: "center" }}>
               <Text style={styles.textDetail}> Favorites</Text>
-              <Text style={styles.textNumber}>0</Text>
+              <Text style={styles.textNumber}>{favoriteHotels.length}</Text>
             </View>
           </View>
         </View>
