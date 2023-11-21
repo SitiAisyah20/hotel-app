@@ -2,17 +2,48 @@ import { View, Text, StyleSheet, Pressable } from 'react-native'
 import React from 'react'
 import Container from '../../components/layout/Container'
 import Button from '../../components/button/Button'
+import { useDispatch, useSelector } from 'react-redux';
+import { clearUser, setIsAuthenticated } from '../../redux/reducers/userReducer';
+import { clearBookingHotel } from '../../redux/actions/hotelAction';
+import { CommonActions } from '@react-navigation/native';
 
 export default function SettingScreen({ navigation }) {
+  const { user } = useSelector((state) => state.user);
+  const { isAuthenticated } = useSelector((state) => state.user);
+  const dispatch = useDispatch();
+
 
 
   const HandleAuth = () => {
-    navigation.navigate('Login')
+    if (!isAuthenticated) {
+      navigation.navigate('Login')
+    } else {
+      dispatch(setIsAuthenticated(false));
+      dispatch(clearUser());
+      dispatch(clearBookingHotel());
+
+      navigation.dispatch(
+        CommonActions.reset({
+          index: 0,
+          routes: [
+            {
+              name: 'Home',
+            }
+          ],
+        })
+      );
+      alert('Logout successfully')
+    }
   }
 
   const HandleEditAccount = () => {
-    navigation.navigate('Edit Profile')
+    if (isAuthenticated) {
+      navigation.navigate('Edit Profile')
+    } else {
+      navigation.navigate('Login')
+    }
   }
+
   return (
     <Container>
       {/* My Account */}
@@ -22,22 +53,27 @@ export default function SettingScreen({ navigation }) {
         {/* details */}
         <View style={{ flexDirection: 'row', paddingVertical: 16, justifyContent: 'space-between', borderBottomColor: '#ccc', borderBottomWidth: 2 }}>
           <Text style={{ fontSize: 16 }}>First Name</Text>
-          <Text style={{ fontSize: 16 }}>Gordon</Text>
+          <Text style={{ fontSize: 16 }}>{user.firstName}</Text>
         </View>
 
         <View style={{ flexDirection: 'row', paddingVertical: 16, justifyContent: 'space-between', borderBottomColor: '#ccc', borderBottomWidth: 2 }}>
           <Text style={{ fontSize: 16 }}>Last Name</Text>
-          <Text style={{ fontSize: 16 }}>Norman</Text>
+          <Text style={{ fontSize: 16 }}>{user.lastName}</Text>
+        </View>
+
+        <View style={{ flexDirection: 'row', paddingVertical: 16, justifyContent: 'space-between', borderBottomColor: '#ccc', borderBottomWidth: 2 }}>
+          <Text style={{ fontSize: 16 }}>Phone</Text>
+          <Text style={{ fontSize: 16 }}>{user.phone}</Text>
         </View>
 
         <View style={{ flexDirection: 'row', paddingVertical: 16, justifyContent: 'space-between', borderBottomColor: '#ccc', borderBottomWidth: 2 }}>
           <Text style={{ fontSize: 16 }}>Email</Text>
-          <Text style={{ fontSize: 16 }}>gordonnorman@mail.com</Text>
+          <Text style={{ fontSize: 16 }}>{user.email}</Text>
         </View>
 
         <View style={{ flexDirection: 'row', paddingVertical: 16, justifyContent: 'space-between' }}>
           <Text style={{ fontSize: 16 }}>Gender</Text>
-          <Text style={{ fontSize: 16 }}>Male</Text>
+          <Text style={{ fontSize: 16 }}>{user.gender}</Text>
         </View>
 
         <Button name='Edit Account' onPress={HandleEditAccount}></Button>
@@ -54,7 +90,7 @@ export default function SettingScreen({ navigation }) {
         </View>
 
         <Pressable onPress={HandleAuth} style={{ flexDirection: 'row', paddingVertical: 16 }}>
-          <Text style={{ fontSize: 16, color: 'tomato', fontWeight: 'bold' }}>Log Out</Text>
+          <Text style={{ fontSize: 16, color: 'tomato', fontWeight: 'bold' }}>{isAuthenticated ? 'Logout' : 'Login'}</Text>
         </Pressable>
 
       </View>

@@ -10,7 +10,7 @@ import { SettingRoutes } from "./stacks/SettingStack";
 import { HomeRoutes } from "./stacks/HomeStack";
 
 // Screen names
-const homeName = "Home ";
+const homeName = "Home";
 const favoriteName = "Favorite";
 const profileName = "Profile";
 const settingName = "Setting ";

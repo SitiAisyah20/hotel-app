@@ -21,6 +21,11 @@ const rootReducer = (state = initialState, action) => {
         ...state,
         bookingHotels: [...state.bookingHotels, action.payload],
       };
+    case "CLEAR_BOOKING_HOTEL":
+      return {
+        ...state,
+        bookingHotels: [],
+      }
     default:
       return state;
   }

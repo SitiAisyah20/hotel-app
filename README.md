@@ -1,3 +1,10 @@
+## Login User Info
+
+```
+Email : user@mail.com
+Password  : user
+```
+
 ## Developed by
 
 1. USAMAH ABDUL MATIN - RCTN-KS08-02

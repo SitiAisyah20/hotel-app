@@ -6,19 +6,21 @@ import {
   TouchableOpacity,
   StyleSheet,
 } from "react-native";
-import { Picker } from "@react-native-picker/picker";
+// import { Picker } from "@react-native-picker/picker";
 import useHideTabBar from "../hooks/useHideTabBar";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { setBookingHotel } from "../redux/actions/hotelAction";
+import { CommonActions } from "@react-navigation/native";
 
 const Booking = ({ navigation, route }) => {
+  const { user } = useSelector((state) => state.user);
   const { hotel, hotelId, price } = route.params;
   const checkInDate = new Date(route.params.checkInDate);
   const checkOutDate = new Date(route.params.checkOutDate);
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [phoneNumber, setPhoneNumber] = useState("");
-  const [countryCode, setCountryCode] = useState("+62");
+  const [name, setName] = useState(`${user.firstName} ${user.lastName}`);
+  const [email, setEmail] = useState(user.email);
+  const [phoneNumber, setPhoneNumber] = useState(user.phone);
+  // const [countryCode, setCountryCode] = useState("+62");
   const [numberOfNights, setNumberOfNights] = useState(0);
   useHideTabBar(navigation);
   const dispatch = useDispatch();
@@ -46,7 +48,17 @@ const Booking = ({ navigation, route }) => {
       price,
     };
     dispatch(setBookingHotel(bookingHotel));
-    navigation.navigate("Profile");
+
+    navigation.dispatch(
+      CommonActions.reset({
+        index: 0,
+        routes: [
+          {
+            name: 'Home',
+          }
+        ],
+      })
+    );
   };
 
   return (
@@ -68,10 +80,10 @@ const Booking = ({ navigation, route }) => {
       />
       <Text style={styles.textLabel}>Phone number</Text>
       <View style={styles.phoneContainer}>
-        <View style={styles.countryCodeContainer}>
+        {/* <View style={styles.countryCodeContainer}>
           <Text style={styles.countryCodeText}>{countryCode}</Text>
-        </View>
-        <Picker
+        </View> */}
+        {/* <Picker
           style={styles.picker}
           selectedValue={countryCode}
           onValueChange={(itemValue) => setCountryCode(itemValue)}
@@ -81,7 +93,7 @@ const Booking = ({ navigation, route }) => {
           <Picker.Item label="United Kingdom (+44)" value="+44" />
           <Picker.Item label="Australia (+61)" value="+61" />
           <Picker.Item label="China (+86)" value="+86" />
-        </Picker>
+        </Picker> */}
         <TextInput
           style={[styles.input, styles.phoneInput]}
           placeholder="Phone number"
@@ -154,7 +166,6 @@ const styles = StyleSheet.create({
   },
   phoneInput: {
     flex: 1,
-    marginLeft: 10,
   },
   summaryContainer: {
     borderRadius: 7,

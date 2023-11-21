@@ -16,6 +16,7 @@ import Review from "../components/details/Review";
 const HotelDetails = ({ navigation }) => {
   const route = useRoute();
   const { hotel, price } = route.params;
+  const { isAuthenticated } = useSelector((state) => state.user);
   const checkInDate = new Date(route.params.checkInDate);
   const checkOutDate = new Date(route.params.checkOutDate);
   const dispatch = useDispatch();
@@ -28,13 +29,18 @@ const HotelDetails = ({ navigation }) => {
   }, [hotel.hotelId]);
 
   const handlePressBooking = () => {
-    navigation.navigate("Booking", {
-      hotel,
-      hotelId: hotel.hotelId,
-      price,
-      checkInDate: checkInDate.toISOString(),
-      checkOutDate: checkOutDate.toISOString(),
-    });
+    if (!isAuthenticated) {
+      navigation.navigate("Login");
+    } else {
+      navigation.navigate("Booking", {
+        hotel,
+        hotelId: hotel.hotelId,
+        price,
+        checkInDate: checkInDate.toISOString(),
+        checkOutDate: checkOutDate.toISOString(),
+      });
+    }
+    
   };
 
   return (
