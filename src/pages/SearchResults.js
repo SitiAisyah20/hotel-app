@@ -30,6 +30,7 @@ export default function SearchResult({ navigation, route }) {
   useHideTabBar(navigation);
   const [loading, setLoading] = useState(true);
   const favoriteHotels = useSelector((state) => state.hotels.favoriteHotels);
+  const { isAuthenticated } = useSelector((state) => state.user);
 
   const handleCardPress = (hotel) => {
     dispatch(fetchHotelDetails(hotel.hotelId));
@@ -48,17 +49,22 @@ export default function SearchResult({ navigation, route }) {
   }, []);
 
   const handleFavorite = (hotel) => {
-    if (favoriteHotels.some((favHotel) => favHotel.hotelId === hotel.hotelId)) {
-      // Debugging
-      console.log('Removing from favorites:', hotel.hotelId);
-      // Remove from favorites
-      dispatch(removeFromFavorites(hotel.hotelId));
+    if (!isAuthenticated) {
+      navigation.navigate("Login");
     } else {
-      // Debugging
-      console.log('Adding to favorites:', hotel.hotelId);
-      // Add to favorites
-      dispatch(addToFavorites(hotel));
+      if (favoriteHotels.some((favHotel) => favHotel.hotelId === hotel.hotelId)) {
+        // Debugging
+        console.log('Removing from favorites:', hotel.hotelId);
+        // Remove from favorites
+        dispatch(removeFromFavorites(hotel.hotelId));
+      } else {
+        // Debugging
+        console.log('Adding to favorites:', hotel.hotelId);
+        // Add to favorites
+        dispatch(addToFavorites(hotel));
+      }
     }
+
   };
 
 

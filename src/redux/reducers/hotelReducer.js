@@ -37,6 +37,12 @@ const rootReducer = (state = initialState, action) => {
         ...state,
         favoriteHotels: state.favoriteHotels.filter(hotel => hotel.hotelId !== action.payload.hotelId),
       };
+      case 'CLEAR_ALL_FAVORITES':
+        return {
+          ...state,
+          favoriteHotels: [],
+        }
+      
     default:
       return state;
   }

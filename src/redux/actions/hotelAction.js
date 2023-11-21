@@ -33,6 +33,10 @@ export const removeFromFavorites = (hotelId) => ({
   payload: { hotelId },
 });
 
+export const clearAllFavorites = () => ({
+  type: "CLEAR_ALL_FAVORITES",
+})
+
 
 export const searchHotels = (location, checkInDate, checkOutDate) => {
   return async (dispatch) => {
