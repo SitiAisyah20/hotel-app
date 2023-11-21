@@ -22,7 +22,7 @@ export const HomeRoutes = () => {
   return (
     <Stack.Navigator initialRouteName="Home">
       <Stack.Screen
-        name="Home"
+        name="Home page"
         component={HomeScreen}
         options={{ ...navigationOptions }}
       />

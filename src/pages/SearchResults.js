@@ -49,9 +49,13 @@ export default function SearchResult({ navigation, route }) {
 
   const handleFavorite = (hotel) => {
     if (favoriteHotels.some((favHotel) => favHotel.hotelId === hotel.hotelId)) {
+      // Debugging
+      console.log('Removing from favorites:', hotel.hotelId);
       // Remove from favorites
       dispatch(removeFromFavorites(hotel.hotelId));
     } else {
+      // Debugging
+      console.log('Adding to favorites:', hotel.hotelId);
       // Add to favorites
       dispatch(addToFavorites(hotel));
     }
@@ -101,9 +105,7 @@ export default function SearchResult({ navigation, route }) {
                 <View style={styles.iconContainer}>
                   <FontAwesome
                     name={
-                      favoriteHotels.some(
-                        (hotel) => hotel.id === result.hotelId
-                      )
+                      favoriteHotels.some((hotel) => hotel.hotelId === result.hotelId)
                         ? "heart"
                         : "heart-o"
                     }

@@ -18,54 +18,56 @@ const FavoriteScreen = ({ navigation }) => {
 
   const handleFavorite = (hotel) => {
     // Remove from favorites
-    dispatch(removeFromFavorites(hotel));
+    dispatch(removeFromFavorites(hotel.hotelId));
   };
 
   return (
     <ScrollView style={styles.container}>
-      {favoriteHotels.map((hotel) => (
-        <Pressable key={hotel.id} style={styles.cardContainer}>
-          <View style={styles.iconContainer}>
-            <FontAwesome
-              name="heart"
-              size={24}
-              color="red"
-              onPress={() => handleFavorite(hotel)}
-            />
-          </View>
-          <Image
-            source={
-              hotel.media && hotel.media.url ? { uri: hotel.media.url } : null
-            }
-            style={styles.hotelImage}
-          />
-          <View style={styles.cardContent}>
-            <View style={styles.leftContent}>
-              <Text style={styles.hotelName}>{hotel.name}</Text>
-              <View style={{ marginLeft: 0, flexDirection: "row", gap: 4 }}>
-                <AirbnbRating
-                  count={5}
-                  defaultRating={hotel.starRating}
-                  size={14}
-                  showRating={false}
-                  isDisabled
-                />
-                <Text>{hotel.starRating}</Text>
-              </View>
-              <View style={styles.locationContainer}>
-                <FontAwesome name="map-marker" size={16} color="black" />
-                <Text style={styles.location}>
-                  {hotel.location &&
-                    hotel.location.address &&
-                    hotel.location.address.cityName}
-                </Text>
-              </View>
+      {favoriteHotels.map((hotel) => hotel.hotelId ? (
+        <View key={hotel.hotelId}>
+          <Pressable style={styles.cardContainer}>
+            <View style={styles.iconContainer}>
+              <FontAwesome
+                name="heart"
+                size={24}
+                color="red"
+                onPress={() => handleFavorite(hotel)}
+              />
             </View>
-            <Text style={styles.price}>{hotel.ratesSummary.minPrice}</Text>
-            <Text> /per night</Text>
-          </View>
-        </Pressable>
-      ))}
+            <Image
+              source={
+                hotel.media && hotel.media.url ? { uri: hotel.media.url } : null
+              }
+              style={styles.hotelImage}
+            />
+            <View style={styles.cardContent}>
+              <View style={styles.leftContent}>
+                <Text style={styles.hotelName}>{hotel.name}</Text>
+                <View style={{ marginLeft: 0, flexDirection: "row", gap: 4 }}>
+                  <AirbnbRating
+                    count={5}
+                    defaultRating={hotel.starRating}
+                    size={14}
+                    showRating={false}
+                    isDisabled
+                  />
+                  <Text>{hotel.starRating}</Text>
+                </View>
+                <View style={styles.locationContainer}>
+                  <FontAwesome name="map-marker" size={16} color="black" />
+                  <Text style={styles.location}>
+                    {hotel.location &&
+                      hotel.location.address &&
+                      hotel.location.address.cityName}
+                  </Text>
+                </View>
+              </View>
+              <Text style={styles.price}>{hotel.ratesSummary.minPrice}</Text>
+              <Text> /per night</Text>
+            </View>
+          </Pressable>
+        </View>
+      ) : null)}
     </ScrollView>
   );
 };

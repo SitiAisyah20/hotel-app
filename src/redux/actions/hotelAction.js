@@ -28,9 +28,9 @@ export const addToFavorites = (hotel) => ({
   payload: hotel,
 });
 
-export const removeFromFavorites = (hotel) => ({
+export const removeFromFavorites = (hotelId) => ({
   type: "REMOVE_FROM_FAVORITES",
-  payload: hotel.hotelId,
+  payload: { hotelId },
 });
 
 
