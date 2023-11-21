@@ -17,10 +17,22 @@ export const setBookingHotel = (bookingHotel) => ({
   type: "SET_BOOKING_HOTEL",
   payload: bookingHotel,
 });
+
 export const clearBookingHotel = (bookingHotel) => ({
   type: "CLEAR_BOOKING_HOTEL",
   payload: bookingHotel,
 });
+
+export const addToFavorites = (hotel) => ({
+  type: "ADD_TO_FAVORITES",
+  payload: hotel,
+});
+
+export const removeFromFavorites = (hotel) => ({
+  type: "REMOVE_FROM_FAVORITES",
+  payload: hotel.hotelId,
+});
+
 
 export const searchHotels = (location, checkInDate, checkOutDate) => {
   return async (dispatch) => {
