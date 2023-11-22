@@ -5,12 +5,13 @@ import {
   StyleSheet,
   Image,
   Pressable,
-  ScrollView,
+  FlatList,
 } from "react-native";
 import { FontAwesome } from "@expo/vector-icons";
 import { AirbnbRating } from "react-native-elements";
 import { useDispatch, useSelector } from "react-redux";
 import { removeFromFavorites } from "../redux/actions/hotelAction";
+import Container from "../components/layout/Container";
 
 const FavoriteScreen = ({ navigation }) => {
   const dispatch = useDispatch();
@@ -21,65 +22,64 @@ const FavoriteScreen = ({ navigation }) => {
     dispatch(removeFromFavorites(hotel.hotelId));
   };
 
-  return (
-    <ScrollView style={styles.container}>
-      {favoriteHotels.map((hotel) => hotel.hotelId ? (
-        <View key={hotel.hotelId}>
-          <Pressable style={styles.cardContainer}>
-            <View style={styles.iconContainer}>
-              <FontAwesome
-                name="heart"
-                size={24}
-                color="red"
-                onPress={() => handleFavorite(hotel)}
-              />
-            </View>
-            <Image
-              source={
-                hotel.media && hotel.media.url ? { uri: hotel.media.url } : null
-              }
-              style={styles.hotelImage}
-            />
-            <View style={styles.cardContent}>
-              <View style={styles.leftContent}>
-                <Text style={styles.hotelName}>{hotel.name}</Text>
-                <View style={{ marginLeft: 0, flexDirection: "row", gap: 4 }}>
-                  <AirbnbRating
-                    count={5}
-                    defaultRating={hotel.starRating}
-                    size={14}
-                    showRating={false}
-                    isDisabled
-                  />
-                  <Text>{hotel.starRating}</Text>
-                </View>
-                <View style={styles.locationContainer}>
-                  <FontAwesome name="map-marker" size={16} color="black" />
-                  <Text style={styles.location}>
-                    {hotel.location &&
-                      hotel.location.address &&
-                      hotel.location.address.cityName}
-                  </Text>
-                </View>
-              </View>
-              <Text style={styles.price}>{hotel.ratesSummary.minPrice}</Text>
-              <Text> /per night</Text>
-            </View>
-          </Pressable>
+  const renderHotelItem = ({ item }) => (
+    <Container key={item.hotelId}>
+      <Pressable style={styles.cardContainer}>
+        <View style={styles.iconContainer}>
+          <FontAwesome
+            name="heart"
+            size={24}
+            color="red"
+            onPress={() => handleFavorite(item)}
+          />
         </View>
-      ) : null)}
-    </ScrollView>
+        <Image
+          source={
+            item.media && item.media.url ? { uri: item.media.url } : null
+          }
+          style={styles.hotelImage}
+        />
+        <View style={styles.cardContent}>
+          <View style={styles.leftContent}>
+            <Text style={styles.hotelName}>{item.name}</Text>
+            <View style={{ marginLeft: 0, flexDirection: "row", gap: 4 }}>
+              <AirbnbRating
+                count={5}
+                defaultRating={item.starRating}
+                size={14}
+                showRating={false}
+                isDisabled
+              />
+              <Text>{item.starRating}</Text>
+            </View>
+            <View style={styles.locationContainer}>
+              <FontAwesome name="map-marker" size={16} color="black" />
+              <Text style={styles.location}>
+                {item.location &&
+                  item.location.address &&
+                  item.location.address.cityName}
+              </Text>
+            </View>
+          </View>
+          <Text style={styles.price}>{item.ratesSummary.minPrice}</Text>
+          <Text> /per night</Text>
+        </View>
+      </Pressable>
+    </Container>
+  );
+
+  return (
+    <FlatList
+      style={styles.container}
+      data={favoriteHotels}
+      keyExtractor={(item) => item.hotelId.toString()}
+      renderItem={renderHotelItem}
+    />
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#fff",
-    padding: 10,
-  },
   cardContainer: {
-    marginBottom: 20,
     borderRadius: 10,
     overflow: "hidden",
     backgroundColor: "#EEF5FF",

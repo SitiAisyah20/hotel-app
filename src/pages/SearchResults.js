@@ -5,8 +5,7 @@ import {
   StyleSheet,
   TextInput,
   Pressable,
-  ScrollView,
-  Image,
+  FlatList,
   ActivityIndicator,
 } from "react-native";
 import { Feather } from "@expo/vector-icons";
@@ -17,8 +16,7 @@ import {
   removeFromFavorites,
   searchHotels,
 } from "../redux/actions/hotelAction";
-import { AirbnbRating } from "react-native-elements";
-import { FontAwesome } from "@expo/vector-icons";
+import HotelCard from "../components/home/HotelCart";
 import useHideTabBar from "../hooks/useHideTabBar";
 
 export default function SearchResult({ navigation, route }) {
@@ -27,10 +25,10 @@ export default function SearchResult({ navigation, route }) {
   const checkOutDate = new Date(route.params.checkOutDate);
   const dispatch = useDispatch();
   const searchResults = useSelector((state) => state.hotels.searchResults);
-  useHideTabBar(navigation);
   const [loading, setLoading] = useState(true);
   const favoriteHotels = useSelector((state) => state.hotels.favoriteHotels);
   const { isAuthenticated } = useSelector((state) => state.user);
+  useHideTabBar(navigation);
 
   const handleCardPress = (hotel) => {
     dispatch(fetchHotelDetails(hotel.hotelId));
@@ -53,118 +51,58 @@ export default function SearchResult({ navigation, route }) {
       navigation.navigate("Login");
     } else {
       if (favoriteHotels.some((favHotel) => favHotel.hotelId === hotel.hotelId)) {
-        // Debugging
-        console.log('Removing from favorites:', hotel.hotelId);
-        // Remove from favorites
         dispatch(removeFromFavorites(hotel.hotelId));
       } else {
-        // Debugging
-        console.log('Adding to favorites:', hotel.hotelId);
-        // Add to favorites
         dispatch(addToFavorites(hotel));
       }
     }
-
   };
 
+  const renderHotelCard = ({ item }) => (
+    <HotelCard
+      item={item}
+      handleCardPress={handleCardPress}
+      handleFavorite={handleFavorite}
+      isFavorite={favoriteHotels.some((hotel) => hotel.hotelId === item.hotelId)}
+    />
+  );
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
-      <View>
-        <View style={styles.inputContainer}>
-          <Feather name="search" size={24} color="black" />
-          <TextInput
-            style={styles.input}
-            placeholder="where do you want to go?"
-            placeholderTextColor="black"
-            value={location}
-          />
-        </View>
-        {/* Date Check-In & Check-Out */}
-        <View style={styles.inputContainer}>
-          <Feather name="calendar" size={24} color="black" />
-          <Pressable style={styles.dateInput}>
-            <Text>{checkInDate.toLocaleDateString()}</Text>
-          </Pressable>
-          <Feather name="calendar" size={24} color="black" />
-          <Pressable style={styles.dateInput}>
-            <Text>{checkOutDate.toLocaleDateString()}</Text>
-          </Pressable>
-        </View>
-
-        {/* Search Results */}
-        {loading ? (
-          <View style={styles.loadingContainer}>
-            <ActivityIndicator size="large" color="tomato" />
-          </View>
-        ) : (
-          searchResults &&
-          searchResults.hotels &&
-          searchResults.hotels.length > 0 &&
-          searchResults.hotels.map((result) =>
-            result.hotelId ? (
-              <Pressable
-                key={result.hotelId}
-                style={styles.cardContainer}
-                onPress={() => handleCardPress(result)}
-              >
-                <View style={styles.iconContainer}>
-                  <FontAwesome
-                    name={
-                      favoriteHotels.some((hotel) => hotel.hotelId === result.hotelId)
-                        ? "heart"
-                        : "heart-o"
-                    }
-                    size={24}
-                    color="red"
-                    onPress={() => handleFavorite(result)}
-                  />
-                </View>
-                <Image
-                  source={
-                    result.media && result.media.url
-                      ? { uri: result.media.url }
-                      : null
-                  }
-                  style={styles.hotelImage}
-                />
-
-                <View style={styles.cardContent}>
-                  <View style={styles.leftContent}>
-                    <Text style={styles.hotelName}>{result.name}</Text>
-                    <View
-                      style={{ marginLeft: 0, flexDirection: "row", gap: 4 }}
-                    >
-                      <AirbnbRating
-                        count={5}
-                        defaultRating={result.starRating}
-                        size={14}
-                        showRating={false}
-                        isDisabled
-                      />
-                      <Text>{result.starRating}</Text>
-                    </View>
-                    <View style={styles.locationContainer}>
-                      <FontAwesome name="map-marker" size={16} color="black" />
-                      {result.location && result.location.address && (
-                        <Text style={styles.location}>
-                          {" "}
-                          {result.location.address.cityName}
-                        </Text>
-                      )}
-                    </View>
-                  </View>
-                  <Text style={styles.price}>
-                    ${result.ratesSummary.minPrice}
-                  </Text>
-                  <Text> /per night</Text>
-                </View>
-              </Pressable>
-            ) : null
-          )
-        )}
+    <View style={styles.container}>
+      <View style={styles.inputContainer}>
+        <Feather name="search" size={24} color="black" />
+        <TextInput
+          style={styles.input}
+          placeholder="where do you want to go?"
+          placeholderTextColor="black"
+          value={location}
+        />
       </View>
-    </ScrollView>
+      {/* Date Check-In & Check-Out */}
+      <View style={styles.inputContainer}>
+        <Feather name="calendar" size={24} color="black" />
+        <Pressable style={styles.dateInput}>
+          <Text>{checkInDate.toLocaleDateString()}</Text>
+        </Pressable>
+        <Feather name="calendar" size={24} color="black" />
+        <Pressable style={styles.dateInput}>
+          <Text>{checkOutDate.toLocaleDateString()}</Text>
+        </Pressable>
+      </View>
+
+      {/* Search Results */}
+      {loading ? (
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color="tomato" />
+        </View>
+      ) : (
+        <FlatList
+          data={searchResults?.hotels || []}
+          keyExtractor={(item) => String(item.hotelId)}
+          renderItem={renderHotelCard}
+        />
+      )}
+    </View>
   );
 }
 
@@ -194,65 +132,9 @@ const styles = StyleSheet.create({
     padding: 10,
     borderRadius: 6,
   },
-  cardContainer: {
-    marginTop: 30,
-    borderRadius: 10,
-    overflow: "hidden",
-    backgroundColor: "#EEF5FF",
-    elevation: 5,
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    position: "relative",
-  },
-  iconContainer: {
-    position: "absolute",
-    top: 10,
-    right: 10,
-    zIndex: 1,
-  },
-  hotelImage: {
-    width: "auto",
-    height: 200,
-    resizeMode: "cover",
-  },
-  cardContent: {
-    padding: 10,
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-  },
-  leftContent: {
-    flex: 1,
-  },
-  hotelName: {
-    fontSize: 18,
-    fontWeight: "bold",
-  },
-  rating: {
-    fontSize: 16,
-    marginBottom: 5,
-  },
-  locationContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginBottom: 5,
-  },
-  location: {
-    fontSize: 16,
-    marginLeft: 5,
-  },
-  price: {
-    fontSize: 18,
-    fontWeight: "bold",
-    color: "tomato",
-  },
   loadingContainer: {
     flex: 1,
+    marginTop: 20,
     justifyContent: "center",
     alignItems: "center",
   },
