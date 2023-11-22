@@ -1,21 +1,28 @@
 import React from "react";
-import { View, Text, StyleSheet, ScrollView, Image } from "react-native";
+import { View, Text, StyleSheet, FlatList, Image } from "react-native";
 import { topDestination } from "../../utils/city";
 
 export default function TopDestination() {
+  const renderTopDestinationItem = ({ item }) => (
+    <View style={styles.cardContainer}>
+      <Image source={item.image} style={styles.imageTop} />
+      <View style={styles.imageOverlay}>
+        <Text style={styles.titleTop}>{item.name}</Text>
+      </View>
+    </View>
+  );
+
   return (
     <>
       <Text style={styles.heading}>Top Destination</Text>
-      <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-        {topDestination.map((top) => (
-          <View key={top.id} style={styles.cardContainer}>
-            <Image source={top.image} style={styles.imageTop} />
-            <View style={styles.imageOverlay}>
-              <Text style={styles.titleTop}>{top.name}</Text>
-            </View>
-          </View>
-        ))}
-      </ScrollView>
+      <FlatList
+        data={topDestination}
+        keyExtractor={(item) => item.id.toString()}
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        renderItem={renderTopDestinationItem}
+        // contentContainerStyle={styles.container}
+      />
     </>
   );
 }
