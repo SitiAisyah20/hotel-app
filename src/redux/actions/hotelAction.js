@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_KEY = "59ba2633c1msh56457453f52bb31p18d533jsnb92ce2f3f28b";
+const API_KEY = "0222321a10mshe02d8cdcfff4f69p1ca7e0jsn3f883da79dc2";
 const BASE_URL = "https://priceline-com-provider.p.rapidapi.com";
 
 export const setSearchResults = (results) => ({
